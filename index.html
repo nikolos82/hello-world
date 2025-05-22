@@ -1,0 +1,3924 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Код района и ФНО</title>
+    <style>
+        /* Основные переменные для тем */
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #f8f9fa;
+            --primary-color: #88bdee;
+            --secondary-color: #6c757d;
+            --table-bg: #2d2d2d;
+            --table-even-bg: #3a3a3a;
+            --table-hover-bg: #4a4a4a;
+            --input-bg: #2d2d2d;
+            --input-border: #495057;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Светлая тема */
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --primary-color: #88bdee;
+            --secondary-color: #6c757d;
+            --table-bg: #ffffff;
+            --table-even-bg: #f8f9fa;
+            --table-hover-bg: #e9ecef;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Основные стили */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Стили для навигационных кнопок */
+        .nav-btn-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* Для позиционирования tooltip */
+        }
+
+        .nav-btn:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        /* Стили для tooltip */
+        .nav-btn .tooltip {
+            visibility: hidden;
+            width: 160px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1000; /* Убедитесь, что tooltip находится поверх других элементов */
+            bottom: 125%; /* Расположение tooltip над кнопкой */
+            left: 50%;
+            transform: translateX(-50%); /* Центрирование tooltip */
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Стрелка tooltip */
+        .nav-btn .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%; /* Расположение стрелки под tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent; /* Цвет стрелки */
+        }
+
+        /* Показ tooltip при наведении на кнопку */
+        .nav-btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Стили для таблиц */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--table-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-even-bg);
+        }
+
+        tr:hover {
+            background-color: var(--table-hover-bg);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Стили для поиска */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* Скрытие таблиц */
+        .hidden {
+            display: none;
+        }
+
+        /* Переключатель темы */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .theme-switcher:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- Подключение шрифта Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+    <!-- Переключатель темы -->
+    <button class="theme-switcher" onclick="toggleTheme()">Светлая тема</button>
+
+    <div class="container">
+        <h1>Код района и ФНО</h1>
+
+        <!-- Навигационные кнопки -->
+        <div class="nav-btn-container">
+            <button class="nav-btn" onclick="showTable('rayTable')">
+                Код района
+                <span class="tooltip">Перейти к таблице кодов районов</span>
+            </button>
+            <button class="nav-btn" onclick="showTable('fnoTable')">
+                Код ФНО
+                <span class="tooltip">Перейти к таблице кодов ФНО (Функциональное Назначение Обьекта)</span>
+            </button>
+        </div>
+
+        <!-- Таблица "Код района" -->
+        <div id="rayTable">
+            <input type="text" id="searchRay" onkeyup="searchTable('rayTable')" placeholder="Поиск по коду или названию района...">
+            <table id="dataRayTable">
+                <thead>
+                    <tr>
+                        <th>Код</th>
+                        <th>Наименование</th>
+                        <th>Транслитерация</th>
+                        <th>Код вида</th>
+                        <th>Код ОКАТО</th>
+                        <th>global_id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Пример данных -->
+                    <tr>
+                        <td>0100</td>
+                        <td>Центральный административный округ</td>
+                        <td>Czentral`ny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45286000</td>
+                        <td>58703558</td>
+                    </tr>
+                    <tr>
+                        <td>0101</td>
+                        <td>район Арбат</td>
+                        <td>rajon Arbat</td>
+                        <td>03</td>
+                        <td>45286552</td>
+                        <td>58703559</td>
+                    </tr>
+                    <tr>
+                        <td>0102</td>
+                        <td>Басманный район</td>
+                        <td>Basmanny'j rajon</td>
+                        <td>03</td>
+                        <td>45286555</td>
+                        <td>58703560</td>
+                    </tr>
+                    <tr>
+                        <td>0103</td>
+                        <td>район Замоскворечье</td>
+                        <td>rajon Zamoskvorech`e</td>
+                        <td>03</td>
+                        <td>45286560</td>
+                        <td>58703561</td>
+                    </tr>
+                    <tr>
+                        <td>0104</td>
+                        <td>Красносельский район</td>
+                        <td>Krasnosel`skij rajon</td>
+                        <td>03</td>
+                        <td>45286565</td>
+                        <td>58703562</td>
+                    </tr>
+                    <tr>
+                        <td>0105</td>
+                        <td>Мещанский район</td>
+                        <td>Meshhanskij rajon</td>
+                        <td>03</td>
+                        <td>45286570</td>
+                        <td>58703563</td>
+                    </tr>
+                    <tr>
+                        <td>0106</td>
+                        <td>Пресненский район</td>
+                        <td>Presnenskij rajon</td>
+                        <td>03</td>
+                        <td>45286575</td>
+                        <td>58703564</td>
+                    </tr>
+                    <tr>
+                        <td>0107</td>
+                        <td>Таганский район</td>
+                        <td>Taganskij rajon</td>
+                        <td>03</td>
+                        <td>45286580</td>
+                        <td>58703565</td>
+                    </tr>
+                    <tr>
+                        <td>0108</td>
+                        <td>Тверской район</td>
+                        <td>Tverskoj rajon</td>
+                        <td>03</td>
+                        <td>45286585</td>
+                        <td>58703566</td>
+                    </tr>
+                    <tr>
+                        <td>0109</td>
+                        <td>район Хамовники</td>
+                        <td>rajon Xamovniki</td>
+                        <td>03</td>
+                        <td>45286590</td>
+                        <td>58703567</td>
+                    </tr>
+                    <tr>
+                        <td>0110</td>
+                        <td>район Якиманка</td>
+                        <td>rajon Yakimanka</td>
+                        <td>03</td>
+                        <td>45286596</td>
+                        <td>58703568</td>
+                    </tr>
+                    <tr>
+                        <td>0200</td>
+                        <td>Северный административный округ</td>
+                        <td>Severny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45277000</td>
+                        <td>58703569</td>
+                    </tr>
+                    <tr>
+                        <td>0201</td>
+                        <td>район Аэропорт</td>
+                        <td>rajon Ae'roport</td>
+                        <td>03</td>
+                        <td>45277553</td>
+                        <td>58703570</td>
+                    </tr>
+                    <tr>
+                        <td>0202</td>
+                        <td>район Беговой</td>
+                        <td>rajon Begovoj</td>
+                        <td>03</td>
+                        <td>45277556</td>
+                        <td>58703571</td>
+                    </tr>
+                    <tr>
+                        <td>0203</td>
+                        <td>Бескудниковский район</td>
+                        <td>Beskudnikovskij rajon</td>
+                        <td>03</td>
+                        <td>45277559</td>
+                        <td>58703572</td>
+                    </tr>
+                    <tr>
+                        <td>0205</td>
+                        <td>Войковский район</td>
+                        <td>Vojkovskij rajon</td>
+                        <td>03</td>
+                        <td>45277565</td>
+                        <td>58703573</td>
+                    </tr>
+                    <tr>
+                        <td>0206</td>
+                        <td>район Восточное Дегунино</td>
+                        <td>rajon Vostochnoe Degunino</td>
+                        <td>03</td>
+                        <td>45277568</td>
+                        <td>58703574</td>
+                    </tr>
+                    <tr>
+                        <td>0207</td>
+                        <td>Головинский район</td>
+                        <td>Golovinskij rajon</td>
+                        <td>03</td>
+                        <td>45277571</td>
+                        <td>58703575</td>
+                    </tr>
+                    <tr>
+                        <td>0208</td>
+                        <td>Дмитровский район</td>
+                        <td>Dmitrovskij rajon</td>
+                        <td>03</td>
+                        <td>45277574</td>
+                        <td>58703576</td>
+                    </tr>
+                    <tr>
+                        <td>0209</td>
+                        <td>район Западное Дегунино</td>
+                        <td>rajon Zapadnoe Degunino</td>
+                        <td>03</td>
+                        <td>45277577</td>
+                        <td>58703577</td>
+                    </tr>
+                    <tr>
+                        <td>0210</td>
+                        <td>район Коптево</td>
+                        <td>rajon Koptevo</td>
+                        <td>03</td>
+                        <td>45277580</td>
+                        <td>58703578</td>
+                    </tr>
+                    <tr>
+                        <td>0211</td>
+                        <td>район Левобережный</td>
+                        <td>rajon Levoberezhny'j</td>
+                        <td>03</td>
+                        <td>45277583</td>
+                        <td>58703579</td>
+                    </tr>
+                    <tr>
+                        <td>0212</td>
+                        <td>Молжаниновский район</td>
+                        <td>Molzhaninovskij rajon</td>
+                        <td>03</td>
+                        <td>45277584</td>
+                        <td>58703580</td>
+                    </tr>
+                    <tr>
+                        <td>0213</td>
+                        <td>Савёловский район</td>
+                        <td>Savyolovskij rajon</td>
+                        <td>03</td>
+                        <td>45277586</td>
+                        <td>58703581</td>
+                    </tr>
+                    <tr>
+                        <td>0214</td>
+                        <td>район Сокол</td>
+                        <td>rajon Sokol</td>
+                        <td>03</td>
+                        <td>45277589</td>
+                        <td>58703582</td>
+                    </tr>
+                    <tr>
+                        <td>0215</td>
+                        <td>Тимирязевский район</td>
+                        <td>Timiryazevskij rajon</td>
+                        <td>03</td>
+                        <td>45277592</td>
+                        <td>58703583</td>
+                    </tr>
+                    <tr>
+                        <td>0216</td>
+                        <td>район Ховрино</td>
+                        <td>rajon Xovrino</td>
+                        <td>03</td>
+                        <td>45277595</td>
+                        <td>58703584</td>
+                    </tr>
+                    <tr>
+                        <td>0217</td>
+                        <td>Хорошёвский район</td>
+                        <td>Xoroshyovskij rajon</td>
+                        <td>03</td>
+                        <td>45277598</td>
+                        <td>58703585</td>
+                    </tr>
+                    <tr>
+                        <td>0300</td>
+                        <td>Северо-Восточный административный округ</td>
+                        <td>Severo-Vostochny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45280000</td>
+                        <td>58703586</td>
+                    </tr>
+                    <tr>
+                        <td>0301</td>
+                        <td>Алексеевский район</td>
+                        <td>Alekseevskij rajon</td>
+                        <td>03</td>
+                        <td>45280552</td>
+                        <td>58703587</td>
+                    </tr>
+                    <tr>
+                        <td>0302</td>
+                        <td>Алтуфьевский район</td>
+                        <td>Altuf`evskij rajon</td>
+                        <td>03</td>
+                        <td>45280554</td>
+                        <td>58703588</td>
+                    </tr>
+                    <tr>
+                        <td>0303</td>
+                        <td>Бабушкинский район</td>
+                        <td>Babushkinskij rajon</td>
+                        <td>03</td>
+                        <td>45280556</td>
+                        <td>58703589</td>
+                    </tr>
+                    <tr>
+                        <td>0304</td>
+                        <td>район Бибирево</td>
+                        <td>rajon Bibirevo</td>
+                        <td>03</td>
+                        <td>45280558</td>
+                        <td>58703590</td>
+                    </tr>
+                    <tr>
+                        <td>0305</td>
+                        <td>Бутырский район</td>
+                        <td>Buty'rskij rajon</td>
+                        <td>03</td>
+                        <td>45280561</td>
+                        <td>58703591</td>
+                    </tr>
+                    <tr>
+                        <td>0306</td>
+                        <td>район Лианозово</td>
+                        <td>rajon Lianozovo</td>
+                        <td>03</td>
+                        <td>45280563</td>
+                        <td>58703592</td>
+                    </tr>
+                    <tr>
+                        <td>0307</td>
+                        <td>Лосиноостровский район</td>
+                        <td>Losinoostrovskij rajon</td>
+                        <td>03</td>
+                        <td>45280565</td>
+                        <td>58703593</td>
+                    </tr>
+                    <tr>
+                        <td>0308</td>
+                        <td>район Марфино</td>
+                        <td>rajon Marfino</td>
+                        <td>03</td>
+                        <td>45280567</td>
+                        <td>58703594</td>
+                    </tr>
+                    <tr>
+                        <td>0309</td>
+                        <td>район Марьина Роща</td>
+                        <td>rajon Mar`ina Roshha</td>
+                        <td>03</td>
+                        <td>45280569</td>
+                        <td>58703595</td>
+                    </tr>
+                    <tr>
+                        <td>0310</td>
+                        <td>Останкинский район</td>
+                        <td>Ostankinskij rajon</td>
+                        <td>03</td>
+                        <td>45280572</td>
+                        <td>58703596</td>
+                    </tr>
+                    <tr>
+                        <td>0311</td>
+                        <td>район Отрадное</td>
+                        <td>rajon Otradnoe</td>
+                        <td>03</td>
+                        <td>45280574</td>
+                        <td>58703597</td>
+                    </tr>
+                    <tr>
+                        <td>0312</td>
+                        <td>район Ростокино</td>
+                        <td>rajon Rostokino</td>
+                        <td>03</td>
+                        <td>45280577</td>
+                        <td>58703598</td>
+                    </tr>
+                    <tr>
+                        <td>0313</td>
+                        <td>район Свиблово</td>
+                        <td>rajon Sviblovo</td>
+                        <td>03</td>
+                        <td>45280580</td>
+                        <td>58703599</td>
+                    </tr>
+                    <tr>
+                        <td>0314</td>
+                        <td>район Северное Медведково</td>
+                        <td>rajon Severnoe Medvedkovo</td>
+                        <td>03</td>
+                        <td>45280583</td>
+                        <td>58703600</td>
+                    </tr>
+                    <tr>
+                        <td>0315</td>
+                        <td>район Северный</td>
+                        <td>rajon Severny'j</td>
+                        <td>03</td>
+                        <td>45280585</td>
+                        <td>58703601</td>
+                    </tr>
+                    <tr>
+                        <td>0316</td>
+                        <td>район Южное Медведково</td>
+                        <td>rajon Yuzhnoe Medvedkovo</td>
+                        <td>03</td>
+                        <td>45280594</td>
+                        <td>58703602</td>
+                    </tr>
+                    <tr>
+                        <td>0317</td>
+                        <td>Ярославский район</td>
+                        <td>Yaroslavskij rajon</td>
+                        <td>03</td>
+                        <td>45280597</td>
+                        <td>58703603</td>
+                    </tr>
+                    <tr>
+                        <td>0400</td>
+                        <td>Восточный административный округ</td>
+                        <td>Vostochny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45263000</td>
+                        <td>58703604</td>
+                    </tr>
+                    <tr>
+                        <td>0403</td>
+                        <td>район Богородское</td>
+                        <td>rajon Bogorodskoe</td>
+                        <td>03</td>
+                        <td>45263552</td>
+                        <td>58703605</td>
+                    </tr>
+                    <tr>
+                        <td>0404</td>
+                        <td>район Вешняки</td>
+                        <td>rajon Veshnyaki</td>
+                        <td>03</td>
+                        <td>45263555</td>
+                        <td>58703606</td>
+                    </tr>
+                    <tr>
+                        <td>0405</td>
+                        <td>район Восточное Измайлово</td>
+                        <td>rajon Vostochnoe Izmajlovo</td>
+                        <td>03</td>
+                        <td>45263558</td>
+                        <td>58703607</td>
+                    </tr>
+                    <tr>
+                        <td>0406</td>
+                        <td>район Гольяново</td>
+                        <td>rajon Gol`yanovo</td>
+                        <td>03</td>
+                        <td>45263564</td>
+                        <td>58703608</td>
+                    </tr>
+                    <tr>
+                        <td>0407</td>
+                        <td>район Ивановское</td>
+                        <td>rajon Ivanovskoe</td>
+                        <td>03</td>
+                        <td>45263567</td>
+                        <td>58703609</td>
+                    </tr>
+                    <tr>
+                        <td>0408</td>
+                        <td>район Измайлово</td>
+                        <td>rajon Izmajlovo</td>
+                        <td>03</td>
+                        <td>45263570</td>
+                        <td>58703610</td>
+                    </tr>
+                    <tr>
+                        <td>0409</td>
+                        <td>район Косино-Ухтомский</td>
+                        <td>rajon Kosino-Uxtomskij</td>
+                        <td>03</td>
+                        <td>45263573</td>
+                        <td>58703611</td>
+                    </tr>
+                    <tr>
+                        <td>0410</td>
+                        <td>район Метрогородок</td>
+                        <td>rajon Metrogorodok</td>
+                        <td>03</td>
+                        <td>45263581</td>
+                        <td>58703612</td>
+                    </tr>
+                    <tr>
+                        <td>0411</td>
+                        <td>район Новогиреево</td>
+                        <td>rajon Novogireevo</td>
+                        <td>03</td>
+                        <td>45263576</td>
+                        <td>58703613</td>
+                    </tr>
+                    <tr>
+                        <td>0412</td>
+                        <td>район Новокосино</td>
+                        <td>rajon Novokosino</td>
+                        <td>03</td>
+                        <td>45263579</td>
+                        <td>58703614</td>
+                    </tr>
+                    <tr>
+                        <td>0413</td>
+                        <td>район Перово</td>
+                        <td>rajon Perovo</td>
+                        <td>03</td>
+                        <td>45263583</td>
+                        <td>58703615</td>
+                    </tr>
+                    <tr>
+                        <td>0414</td>
+                        <td>район Восточный</td>
+                        <td>rajon Vostochny'j</td>
+                        <td>03</td>
+                        <td>45263561</td>
+                        <td>58703616</td>
+                    </tr>
+                    <tr>
+                        <td>0415</td>
+                        <td>район Преображенское</td>
+                        <td>rajon Preobrazhenskoe</td>
+                        <td>03</td>
+                        <td>45263594</td>
+                        <td>58703617</td>
+                    </tr>
+                    <tr>
+                        <td>0416</td>
+                        <td>район Северное Измайлово</td>
+                        <td>rajon Severnoe Izmajlovo</td>
+                        <td>03</td>
+                        <td>45263585</td>
+                        <td>58703618</td>
+                    </tr>
+                    <tr>
+                        <td>0417</td>
+                        <td>район Соколиная Гора</td>
+                        <td>rajon Sokolinaya Gora</td>
+                        <td>03</td>
+                        <td>45263588</td>
+                        <td>58703619</td>
+                    </tr>
+                    <tr>
+                        <td>0418</td>
+                        <td>район Сокольники</td>
+                        <td>rajon Sokol`niki</td>
+                        <td>03</td>
+                        <td>45263591</td>
+                        <td>58703620</td>
+                    </tr>
+                    <tr>
+                        <td>0500</td>
+                        <td>Юго-Восточный административный округ</td>
+                        <td>Yugo-Vostochny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45290000</td>
+                        <td>58703621</td>
+                    </tr>
+                    <tr>
+                        <td>0504</td>
+                        <td>район Выхино-Жулебино</td>
+                        <td>rajon Vy'xino-Zhulebino</td>
+                        <td>03</td>
+                        <td>45290554</td>
+                        <td>58703622</td>
+                    </tr>
+                    <tr>
+                        <td>0505</td>
+                        <td>район Капотня</td>
+                        <td>rajon Kapotnya</td>
+                        <td>03</td>
+                        <td>45290558</td>
+                        <td>58703623</td>
+                    </tr>
+                    <tr>
+                        <td>0506</td>
+                        <td>район Кузьминки</td>
+                        <td>rajon Kuz`minki</td>
+                        <td>03</td>
+                        <td>45290562</td>
+                        <td>58703624</td>
+                    </tr>
+                    <tr>
+                        <td>0507</td>
+                        <td>район Лефортово</td>
+                        <td>rajon Lefortovo</td>
+                        <td>03</td>
+                        <td>45290564</td>
+                        <td>58703625</td>
+                    </tr>
+                    <tr>
+                        <td>0508</td>
+                        <td>район Люблино</td>
+                        <td>rajon Lyublino</td>
+                        <td>03</td>
+                        <td>45290568</td>
+                        <td>58703626</td>
+                    </tr>
+                    <tr>
+                        <td>0509</td>
+                        <td>район Марьино</td>
+                        <td>rajon Mar`ino</td>
+                        <td>03</td>
+                        <td>45290572</td>
+                        <td>58703627</td>
+                    </tr>
+                    <tr>
+                        <td>0510</td>
+                        <td>Нижегородский район</td>
+                        <td>Nizhegorodskij rajon</td>
+                        <td>03</td>
+                        <td>45290578</td>
+                        <td>58703628</td>
+                    </tr>
+                    <tr>
+                        <td>0511</td>
+                        <td>район Печатники</td>
+                        <td>rajon Pechatniki</td>
+                        <td>03</td>
+                        <td>45290582</td>
+                        <td>58703629</td>
+                    </tr>
+                    <tr>
+                        <td>0512</td>
+                        <td>район Некрасовка</td>
+                        <td>rajon Nekrasovka</td>
+                        <td>03</td>
+                        <td>45290574</td>
+                        <td>58703630</td>
+                    </tr>
+                    <tr>
+                        <td>0513</td>
+                        <td>Рязанский район</td>
+                        <td>Ryazanskij rajon</td>
+                        <td>03</td>
+                        <td>45290586</td>
+                        <td>58703631</td>
+                    </tr>
+                    <tr>
+                        <td>0514</td>
+                        <td>район Текстильщики</td>
+                        <td>rajon Tekstil`shhiki</td>
+                        <td>03</td>
+                        <td>45290590</td>
+                        <td>58703632</td>
+                    </tr>
+                    <tr>
+                        <td>0515</td>
+                        <td>Южнопортовый район</td>
+                        <td>Yuzhnoportovy'j rajon</td>
+                        <td>03</td>
+                        <td>45290594</td>
+                        <td>58703633</td>
+                    </tr>
+                    <tr>
+                        <td>0600</td>
+                        <td>Южный административный округ</td>
+                        <td>Yuzhny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45296000</td>
+                        <td>58703634</td>
+                    </tr>
+                    <tr>
+                        <td>0606</td>
+                        <td>район Бирюлёво Восточное</td>
+                        <td>rajon Biryulyovo Vostochnoe</td>
+                        <td>03</td>
+                        <td>45296553</td>
+                        <td>58703635</td>
+                    </tr>
+                    <tr>
+                        <td>0607</td>
+                        <td>район Бирюлёво Западное</td>
+                        <td>rajon Biryulyovo Zapadnoe</td>
+                        <td>03</td>
+                        <td>45296555</td>
+                        <td>58703636</td>
+                    </tr>
+                    <tr>
+                        <td>0608</td>
+                        <td>район Братеево</td>
+                        <td>rajon Brateevo</td>
+                        <td>03</td>
+                        <td>45296557</td>
+                        <td>58703637</td>
+                    </tr>
+                    <tr>
+                        <td>0609</td>
+                        <td>Даниловский район</td>
+                        <td>Danilovskij rajon</td>
+                        <td>03</td>
+                        <td>45296559</td>
+                        <td>58703638</td>
+                    </tr>
+                    <tr>
+                        <td>0610</td>
+                        <td>Донской район</td>
+                        <td>Donskoj rajon</td>
+                        <td>03</td>
+                        <td>45296561</td>
+                        <td>58703639</td>
+                    </tr>
+                    <tr>
+                        <td>0611</td>
+                        <td>район Зябликово</td>
+                        <td>rajon Zyablikovo</td>
+                        <td>03</td>
+                        <td>45296565</td>
+                        <td>58703640</td>
+                    </tr>
+                    <tr>
+                        <td>0612</td>
+                        <td>район Москворечье-Сабурово</td>
+                        <td>rajon Moskvorech`e-Saburovo</td>
+                        <td>03</td>
+                        <td>45296569</td>
+                        <td>58703641</td>
+                    </tr>
+                    <tr>
+                        <td>0613</td>
+                        <td>район Нагатино-Садовники</td>
+                        <td>rajon Nagatino-Sadovniki</td>
+                        <td>03</td>
+                        <td>45296571</td>
+                        <td>58703642</td>
+                    </tr>
+                    <tr>
+                        <td>0614</td>
+                        <td>район Нагатинский Затон</td>
+                        <td>rajon Nagatinskij Zaton</td>
+                        <td>03</td>
+                        <td>45296573</td>
+                        <td>58703643</td>
+                    </tr>
+                    <tr>
+                        <td>0615</td>
+                        <td>Нагорный район</td>
+                        <td>Nagorny'j rajon</td>
+                        <td>03</td>
+                        <td>45296575</td>
+                        <td>58703644</td>
+                    </tr>
+                    <tr>
+                        <td>0616</td>
+                        <td>район Орехово-Борисово Северное</td>
+                        <td>rajon Orexovo-Borisovo Severnoe</td>
+                        <td>03</td>
+                        <td>45296577</td>
+                        <td>58703645</td>
+                    </tr>
+                    <tr>
+                        <td>0617</td>
+                        <td>район Орехово-Борисово Южное</td>
+                        <td>rajon Orexovo-Borisovo Yuzhnoe</td>
+                        <td>03</td>
+                        <td>45296579</td>
+                        <td>58703646</td>
+                    </tr>
+                    <tr>
+                        <td>0618</td>
+                        <td>район Царицыно</td>
+                        <td>rajon Czariczy'no</td>
+                        <td>03</td>
+                        <td>45296590</td>
+                        <td>58703647</td>
+                    </tr>
+                    <tr>
+                        <td>0619</td>
+                        <td>район Чертаново Северное</td>
+                        <td>rajon Chertanovo Severnoe</td>
+                        <td>03</td>
+                        <td>45296593</td>
+                        <td>58703648</td>
+                    </tr>
+                    <tr>
+                        <td>0620</td>
+                        <td>район Чертаново Центральное</td>
+                        <td>rajon Chertanovo Czentral`noe</td>
+                        <td>03</td>
+                        <td>45296595</td>
+                        <td>58703649</td>
+                    </tr>
+                    <tr>
+                        <td>0621</td>
+                        <td>район Чертаново Южное</td>
+                        <td>rajon Chertanovo Yuzhnoe</td>
+                        <td>03</td>
+                        <td>45296597</td>
+                        <td>58703650</td>
+                    </tr>
+                    <tr>
+                        <td>0700</td>
+                        <td>Юго-Западный административный округ</td>
+                        <td>Yugo-Zapadny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45293000</td>
+                        <td>58703651</td>
+                    </tr>
+                    <tr>
+                        <td>0701</td>
+                        <td>Академический район</td>
+                        <td>Akademicheskij rajon</td>
+                        <td>03</td>
+                        <td>45293554</td>
+                        <td>58703652</td>
+                    </tr>
+                    <tr>
+                        <td>0702</td>
+                        <td>Гагаринский район</td>
+                        <td>Gagarinskij rajon</td>
+                        <td>03</td>
+                        <td>45293558</td>
+                        <td>58703653</td>
+                    </tr>
+                    <tr>
+                        <td>0703</td>
+                        <td>район Зюзино</td>
+                        <td>rajon Zyuzino</td>
+                        <td>03</td>
+                        <td>45293562</td>
+                        <td>58703654</td>
+                    </tr>
+                    <tr>
+                        <td>0704</td>
+                        <td>район Коньково</td>
+                        <td>rajon Kon`kovo</td>
+                        <td>03</td>
+                        <td>45293566</td>
+                        <td>58703655</td>
+                    </tr>
+                    <tr>
+                        <td>0705</td>
+                        <td>район Котловка</td>
+                        <td>rajon Kotlovka</td>
+                        <td>03</td>
+                        <td>45293570</td>
+                        <td>58703656</td>
+                    </tr>
+                    <tr>
+                        <td>0706</td>
+                        <td>Ломоносовский район</td>
+                        <td>Lomonosovskij rajon</td>
+                        <td>03</td>
+                        <td>45293574</td>
+                        <td>58703658</td>
+                    </tr>
+                    <tr>
+                        <td>0707</td>
+                        <td>Обручевский район</td>
+                        <td>Obruchevskij rajon</td>
+                        <td>03</td>
+                        <td>45293578</td>
+                        <td>58703659</td>
+                    </tr>
+                    <tr>
+                        <td>0708</td>
+                        <td>район Северное Бутово</td>
+                        <td>rajon Severnoe Butovo</td>
+                        <td>03</td>
+                        <td>45293582</td>
+                        <td>58703660</td>
+                    </tr>
+                    <tr>
+                        <td>0709</td>
+                        <td>район Тёплый Стан</td>
+                        <td>rajon Tyoply'j Stan</td>
+                        <td>03</td>
+                        <td>45293586</td>
+                        <td>58703661</td>
+                    </tr>
+                    <tr>
+                        <td>0710</td>
+                        <td>район Черёмушки</td>
+                        <td>rajon Cheryomushki</td>
+                        <td>03</td>
+                        <td>45293590</td>
+                        <td>58703662</td>
+                    </tr>
+                    <tr>
+                        <td>0711</td>
+                        <td>район Южное Бутово</td>
+                        <td>rajon Yuzhnoe Butovo</td>
+                        <td>03</td>
+                        <td>45293594</td>
+                        <td>58703663</td>
+                    </tr>
+                    <tr>
+                        <td>0712</td>
+                        <td>район Ясенево</td>
+                        <td>rajon Yasenevo</td>
+                        <td>03</td>
+                        <td>45293598</td>
+                        <td>58703664</td>
+                    </tr>
+                    <tr>
+                        <td>0800</td>
+                        <td>Западный административный округ</td>
+                        <td>Zapadny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45268000</td>
+                        <td>58703665</td>
+                    </tr>
+                    <tr>
+                        <td>0805</td>
+                        <td>район Дорогомилово</td>
+                        <td>rajon Dorogomilovo</td>
+                        <td>03</td>
+                        <td>45268554</td>
+                        <td>58703666</td>
+                    </tr>
+                    <tr>
+                        <td>0806</td>
+                        <td>район Крылатское</td>
+                        <td>rajon Kry'latskoe</td>
+                        <td>03</td>
+                        <td>45268560</td>
+                        <td>58703667</td>
+                    </tr>
+                    <tr>
+                        <td>0807</td>
+                        <td>район Кунцево</td>
+                        <td>rajon Kunczevo</td>
+                        <td>03</td>
+                        <td>45268562</td>
+                        <td>58703668</td>
+                    </tr>
+                    <tr>
+                        <td>0809</td>
+                        <td>Можайский район</td>
+                        <td>Mozhajskij rajon</td>
+                        <td>03</td>
+                        <td>45268569</td>
+                        <td>58703669</td>
+                    </tr>
+                    <tr>
+                        <td>0811</td>
+                        <td>район Ново-Переделкино</td>
+                        <td>rajon Novo-Peredelkino</td>
+                        <td>03</td>
+                        <td>45268577</td>
+                        <td>58703670</td>
+                    </tr>
+                    <tr>
+                        <td>0813</td>
+                        <td>район Внуково</td>
+                        <td>rajon Vnukovo</td>
+                        <td>03</td>
+                        <td>45268552</td>
+                        <td>58703671</td>
+                    </tr>
+                    <tr>
+                        <td>0814</td>
+                        <td>район Проспект Вернадского</td>
+                        <td>rajon Prospekt Vernadskogo</td>
+                        <td>03</td>
+                        <td>45268581</td>
+                        <td>58703672</td>
+                    </tr>
+                    <tr>
+                        <td>0815</td>
+                        <td>район Раменки</td>
+                        <td>rajon Ramenki</td>
+                        <td>03</td>
+                        <td>45268584</td>
+                        <td>58703673</td>
+                    </tr>
+                    <tr>
+                        <td>0816</td>
+                        <td>район Солнцево</td>
+                        <td>rajon Solnczevo</td>
+                        <td>03</td>
+                        <td>45268588</td>
+                        <td>58703674</td>
+                    </tr>
+                    <tr>
+                        <td>0817</td>
+                        <td>район Тропарёво-Никулино</td>
+                        <td>rajon Troparyovo-Nikulino</td>
+                        <td>03</td>
+                        <td>45268592</td>
+                        <td>58703675</td>
+                    </tr>
+                    <tr>
+                        <td>0818</td>
+                        <td>район Филёвский Парк</td>
+                        <td>rajon Filyovskij Park</td>
+                        <td>03</td>
+                        <td>45268595</td>
+                        <td>58703676</td>
+                    </tr>
+                    <tr>
+                        <td>0819</td>
+                        <td>район Фили-Давыдково</td>
+                        <td>rajon Fili-Davy'dkovo</td>
+                        <td>03</td>
+                        <td>45268597</td>
+                        <td>58703677</td>
+                    </tr>
+                    <tr>
+                        <td>0820</td>
+                        <td>район Очаково-Матвеевское</td>
+                        <td>rajon Ochakovo-Matveevskoe</td>
+                        <td>03</td>
+                        <td>45268579</td>
+                        <td>58703678</td>
+                    </tr>
+                    <tr>
+                        <td>0900</td>
+                        <td>Северо-Западный административный округ</td>
+                        <td>Severo-Zapadny'j administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45283000</td>
+                        <td>58703679</td>
+                    </tr>
+                    <tr>
+                        <td>0901</td>
+                        <td>район Куркино</td>
+                        <td>rajon Kurkino</td>
+                        <td>03</td>
+                        <td>45283555</td>
+                        <td>58703680</td>
+                    </tr>
+                    <tr>
+                        <td>0902</td>
+                        <td>район Митино</td>
+                        <td>rajon Mitino</td>
+                        <td>03</td>
+                        <td>45283559</td>
+                        <td>58703681</td>
+                    </tr>
+                    <tr>
+                        <td>0903</td>
+                        <td>район Покровское-Стрешнево</td>
+                        <td>rajon Pokrovskoe-Streshnevo</td>
+                        <td>03</td>
+                        <td>45283569</td>
+                        <td>58703682</td>
+                    </tr>
+                    <tr>
+                        <td>0904</td>
+                        <td>район Северное Тушино</td>
+                        <td>rajon Severnoe Tushino</td>
+                        <td>03</td>
+                        <td>45283573</td>
+                        <td>58703683</td>
+                    </tr>
+                    <tr>
+                        <td>0905</td>
+                        <td>район Строгино</td>
+                        <td>rajon Strogino</td>
+                        <td>03</td>
+                        <td>45283577</td>
+                        <td>58703684</td>
+                    </tr>
+                    <tr>
+                        <td>0906</td>
+                        <td>район Хорошёво-Мнёвники</td>
+                        <td>rajon Xoroshyovo-Mnyovniki</td>
+                        <td>03</td>
+                        <td>45283582</td>
+                        <td>58703685</td>
+                    </tr>
+                    <tr>
+                        <td>0907</td>
+                        <td>район Щукино</td>
+                        <td>rajon Shhukino</td>
+                        <td>03</td>
+                        <td>45283587</td>
+                        <td>58703686</td>
+                    </tr>
+                    <tr>
+                        <td>0908</td>
+                        <td>район Южное Тушино</td>
+                        <td>rajon Yuzhnoe Tushino</td>
+                        <td>03</td>
+                        <td>45283593</td>
+                        <td>58703687</td>
+                    </tr>
+                    <tr>
+                        <td>1000</td>
+                        <td>Зеленоградский административный округ</td>
+                        <td>Zelenogradskij administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45272000</td>
+                        <td>58703688</td>
+                    </tr>
+                    <tr>
+                        <td>1005</td>
+                        <td>район Крюково</td>
+                        <td>rajon Kryukovo</td>
+                        <td>03</td>
+                        <td>45272580</td>
+                        <td>58703689</td>
+                    </tr>
+                    <tr>
+                        <td>1009</td>
+                        <td>район Матушкино</td>
+                        <td>rajon Matushkino</td>
+                        <td>03</td>
+                        <td>45272562</td>
+                        <td>58703690</td>
+                    </tr>
+                    <tr>
+                        <td>1010</td>
+                        <td>район Савёлки</td>
+                        <td>rajon Savyolki</td>
+                        <td>03</td>
+                        <td>45272568</td>
+                        <td>58703691</td>
+                    </tr>
+                    <tr>
+                        <td>1011</td>
+                        <td>район Силино</td>
+                        <td>rajon Silino</td>
+                        <td>03</td>
+                        <td>45272572</td>
+                        <td>58703692</td>
+                    </tr>
+                    <tr>
+                        <td>1012</td>
+                        <td>район Старое Крюково</td>
+                        <td>rajon Staroe Kryukovo</td>
+                        <td>03</td>
+                        <td>45272576</td>
+                        <td>58703693</td>
+                    </tr>
+                    <tr>
+                        <td>1100</td>
+                        <td>Новомосковский административный округ</td>
+                        <td>Novomoskovskij administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45297000</td>
+                        <td>58703694</td>
+                    </tr>
+                    <tr>
+                        <td>1200</td>
+                        <td>Троицкий административный округ</td>
+                        <td>Troiczkij administrativny'j okrug</td>
+                        <td>02</td>
+                        <td>45298000</td>
+                        <td>58703706</td>
+                    </tr>
+                    <tr>
+                        <td>1112</td>
+                        <td>район Внуково</td>
+                        <td>rajon Vnukovo</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1113</td>
+                        <td>район Коммунарка</td>
+                        <td>rajon Kommunarka</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1114</td>
+                        <td>Филимонковский район</td>
+                        <td>Filimonkovskij rajon</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1115</td>
+                        <td>район Щербинка</td>
+                        <td>rajon Shherbinka</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1211</td>
+                        <td>район Бекасово</td>
+                        <td>rajon Bekasovo</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1212</td>
+                        <td>район Вороново</td>
+                        <td>rajon Voronovo</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1213</td>
+                        <td>Краснопахорский район</td>
+                        <td>Krasnopaxorskij rajon</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1214</td>
+                        <td>район Троицк</td>
+                        <td>rajon Troiczk</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1101</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1102</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1103</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1104</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1105</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1106</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1107</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1108</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1109</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1110</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1111</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1201</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1202</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1203</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1204</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1205</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1206</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1207</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1208</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1209</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1210</td>
+                        <td>error</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <!-- Добавьте остальные строки -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Таблица "Код ФНО" -->
+        <div id="fnoTable" class="hidden">
+            <input type="text" id="searchFno" onkeyup="searchTable('fnoTable')" placeholder="Поиск по коду или имени ФНО...">
+            <table id="dataFnoTable">
+                <thead>
+                    <tr>
+                        <th width="100">ФНО Код</th>
+                        <th>ФНО Имя</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Пример данных -->
+                    <tr>
+                        <td>000</td>
+                        <td>Благоустройство территории многоэтажного многоквартирного дома</td>
+                    </tr>
+                    <tr>
+                        <td>001</td>
+                        <td>Административно-деловые объекты</td>
+                    </tr>
+                    <tr>
+                        <td>001 001</td>
+                        <td>Объект органов государственной власти и органов местного самоуправления</td>
+                    </tr>
+                    <tr>
+                        <td>001 001 001</td>
+                        <td>Объект органов государственной власти Российской Федерации</td>
+                    </tr>
+                    <tr>
+                        <td>001 001 002</td>
+                        <td>Объект органов государственной власти города Москвы</td>
+                    </tr>
+                    <tr>
+                        <td>001 001 003</td>
+                        <td>Объект органов государственной власти иных субъектов Российской Федерации</td>
+                    </tr>
+                    <tr>
+                        <td>001 001 004</td>
+                        <td>Объект органов местного самоуправления</td>
+                    </tr>
+                    <tr>
+                        <td>001 002</td>
+                        <td>Объект правосудия, прокуратуры, адвокатуры и нотариата</td>
+                    </tr>
+                    <tr>
+                        <td>001 002 001</td>
+                        <td>Суд</td>
+                    </tr>
+                    <tr>
+                        <td>001 002 002</td>
+                        <td>Прокуратура</td>
+                    </tr>
+                    <tr>
+                        <td>001 002 003</td>
+                        <td>Объект осуществления адвокатской деятельности</td>
+                    </tr>
+                    <tr>
+                        <td>001 002 004</td>
+                        <td>Объект осуществления нотариальной деятельности</td>
+                    </tr>
+                    <tr>
+                        <td>001 003</td>
+                        <td>Объект обеспечения безопасности и охраны правопорядка</td>
+                    </tr>
+                    <tr>
+                        <td>001 003 001</td>
+                        <td>Здание полиции</td>
+                    </tr>
+                    <tr>
+                        <td>001 003 002</td>
+                        <td>Объект государственной инспекции по обеспечению безопасности дорожного движения</td>
+                    </tr>
+                    <tr>
+                        <td>001 003 003</td>
+                        <td>Пост дорожно-патрульной службы</td>
+                    </tr>
+                    <tr>
+                        <td>001 003 004</td>
+                        <td>Участковый пункт полиции и общественные пункты охраны порядка</td>
+                    </tr>
+                    <tr>
+                        <td>001 004</td>
+                        <td>Административно-деловой объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 001</td>
+                        <td>Объект таможенных органов</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 002</td>
+                        <td>Здание налоговой инспекции</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 003</td>
+                        <td>Здание Пенсионного фонда Российской Федерации, Федерального фонда обязательного медицинского страхования, Фонда социального страхования Российской Федерации</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 004</td>
+                        <td>Отдел записи актов гражданского состояния, дворец бракосочетания</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 005</td>
+                        <td>Посольство, консульство, торговое представительство иностранных государств</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 006</td>
+                        <td>Многофункциональный центр предоставления государственных и муниципальных услуг</td>
+                    </tr>
+                    <tr>
+                        <td>001 004 007</td>
+                        <td>Административно-управленческий объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>001 005</td>
+                        <td>Офисный объект</td>
+                    </tr>
+                    <tr>
+                        <td>001 005 001</td>
+                        <td>Офисное здание</td>
+                    </tr>
+                    <tr>
+                        <td>001 005 002</td>
+                        <td>Деловой центр</td>
+                    </tr>
+                    <tr>
+                        <td>001 006</td>
+                        <td>Объект финансово-кредитных и страховых организаций</td>
+                    </tr>
+                    <tr>
+                        <td>001 006 001</td>
+                        <td>Банк</td>
+                    </tr>
+                    <tr>
+                        <td>001 006 002</td>
+                        <td>Страховая организация</td>
+                    </tr>
+                    <tr>
+                        <td>001 007</td>
+                        <td>Объект научной деятельности</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 001</td>
+                        <td>Научно-исследовательский институт</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 002</td>
+                        <td>Здание лабораторное</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 003</td>
+                        <td>Здание экспериментальных мастерских</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 004</td>
+                        <td>Научная и опытная станция</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 005</td>
+                        <td>Научная и опытная лаборатория</td>
+                    </tr>
+                    <tr>
+                        <td>001 007 006</td>
+                        <td>Центр информационно-вычислительный</td>
+                    </tr>
+                    <tr>
+                        <td>001 008</td>
+                        <td>Объект инновационной инфраструктуры</td>
+                    </tr>
+                    <tr>
+                        <td>001 008 001</td>
+                        <td>Объект технологических парков</td>
+                    </tr>
+                    <tr>
+                        <td>001 008 002</td>
+                        <td>Объект бизнес-инкубатора</td>
+                    </tr>
+                    <tr>
+                        <td>001 008 003</td>
+                        <td>Объект технополисов</td>
+                    </tr>
+                    <tr>
+                        <td>001 008 004</td>
+                        <td>Объект инновационных парков</td>
+                    </tr>
+                    <tr>
+                        <td>001 009</td>
+                        <td>Объект проектного и изыскательского назначения</td>
+                    </tr>
+                    <tr>
+                        <td>001 009 001</td>
+                        <td>Конструкторское бюро</td>
+                    </tr>
+                    <tr>
+                        <td>001 009 002</td>
+                        <td>Проектный институт</td>
+                    </tr>
+                    <tr>
+                        <td>001 009 003</td>
+                        <td>Объект организации инженерных изысканий</td>
+                    </tr>
+                    <tr>
+                        <td>001 009 004</td>
+                        <td>Гидрометеоцентр, радиометеоцентр</td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>Учебно-образовательные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>002 001</td>
+                        <td>Объект профессионального образования</td>
+                    </tr>
+                    <tr>
+                        <td>002 001 001</td>
+                        <td>Профессиональная образовательная организация</td>
+                    </tr>
+                    <tr>
+                        <td>002 001 002</td>
+                        <td>Образовательная организация высшего образования</td>
+                    </tr>
+                    <tr>
+                        <td>002 002</td>
+                        <td>Объект дополнительного образования и дополнительного профессионального образования</td>
+                    </tr>
+                    <tr>
+                        <td>002 002 001</td>
+                        <td>Организация дополнительного образования</td>
+                    </tr>
+                    <tr>
+                        <td>002 002 002</td>
+                        <td>Организация дополнительного профессионального образования</td>
+                    </tr>
+                    <tr>
+                        <td>003</td>
+                        <td>Культурно-просветительные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>003 001</td>
+                        <td>Культурно-просветительный объект</td>
+                    </tr>
+                    <tr>
+                        <td>003 001 001</td>
+                        <td>Библиотека</td>
+                    </tr>
+                    <tr>
+                        <td>003 001 002</td>
+                        <td>Музей</td>
+                    </tr>
+                    <tr>
+                        <td>003 001 003</td>
+                        <td>Выставочный зал</td>
+                    </tr>
+                    <tr>
+                        <td>003 002</td>
+                        <td>Культурно-зрелищный объект</td>
+                    </tr>
+                    <tr>
+                        <td>003 002 001</td>
+                        <td>Театр</td>
+                    </tr>
+                    <tr>
+                        <td>003 002 002</td>
+                        <td>Концертный зал</td>
+                    </tr>
+                    <tr>
+                        <td>003 002 003</td>
+                        <td>Филармония</td>
+                    </tr>
+                    <tr>
+                        <td>003 002 004</td>
+                        <td>Кинотеатр</td>
+                    </tr>
+                    <tr>
+                        <td>003 002 005</td>
+                        <td>Цирк</td>
+                    </tr>
+                    <tr>
+                        <td>003 003</td>
+                        <td>Культурно-досуговый объект</td>
+                    </tr>
+                    <tr>
+                        <td>003 003 001</td>
+                        <td>Клуб</td>
+                    </tr>
+                    <tr>
+                        <td>003 003 002</td>
+                        <td>Дом культуры</td>
+                    </tr>
+                    <tr>
+                        <td>003 003 003</td>
+                        <td>Эстрада</td>
+                    </tr>
+                    <tr>
+                        <td>003 003 004</td>
+                        <td>Танцевальный зал</td>
+                    </tr>
+                    <tr>
+                        <td>003 003 005</td>
+                        <td>Многофункциональный развлекательный центр</td>
+                    </tr>
+                    <tr>
+                        <td>003 004</td>
+                        <td>Культовый и религиозный объект</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 001</td>
+                        <td>Монастырь</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 002</td>
+                        <td>Собор</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 003</td>
+                        <td>Храм</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 004</td>
+                        <td>Церковь</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 005</td>
+                        <td>Колокольня</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 006</td>
+                        <td>Часовня</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 007</td>
+                        <td>Молельный дом</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 008</td>
+                        <td>Мечеть</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 009</td>
+                        <td>Минарет</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 010</td>
+                        <td>Синагога</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 011</td>
+                        <td>Костел</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 012</td>
+                        <td>Семинария</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 013</td>
+                        <td>Медресе</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 014</td>
+                        <td>Воскресная школа</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 015</td>
+                        <td>Дом причта</td>
+                    </tr>
+                    <tr>
+                        <td>003 004 016</td>
+                        <td>Культовый и религиозный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>003 005</td>
+                        <td>Место отдыха общего пользования</td>
+                    </tr>
+                    <tr>
+                        <td>003 005 001</td>
+                        <td>Дельфинарий</td>
+                    </tr>
+                    <tr>
+                        <td>003 005 002</td>
+                        <td>Аквапарк</td>
+                    </tr>
+                    <tr>
+                        <td>003 005 003</td>
+                        <td>Оранжерея, зимний сад</td>
+                    </tr>
+                    <tr>
+                        <td>003 005 004</td>
+                        <td>Место отдыха общего пользования иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>003 006</td>
+                        <td>Культурно-просветительный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>003 006 001</td>
+                        <td>Объект декоративно-монументального искусства</td>
+                    </tr>
+                    <tr>
+                        <td>004</td>
+                        <td>Торгово-бытовые объекты</td>
+                    </tr>
+                    <tr>
+                        <td>004 001</td>
+                        <td>Многофункциональные торговые центры и комплексы</td>
+                    </tr>
+                    <tr>
+                        <td>004 001 001</td>
+                        <td>Торговый центр, торговый комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>004 001 002</td>
+                        <td>Многофункциональный торгово-развлекательный центр</td>
+                    </tr>
+                    <tr>
+                        <td>004 002</td>
+                        <td>Объект торговли</td>
+                    </tr>
+                    <tr>
+                        <td>004 002 001</td>
+                        <td>Магазин</td>
+                    </tr>
+                    <tr>
+                        <td>004 002 002</td>
+                        <td>Крытый рынок</td>
+                    </tr>
+                    <tr>
+                        <td>004 002 003</td>
+                        <td>Аптека, оптика</td>
+                    </tr>
+                    <tr>
+                        <td>004 002 004</td>
+                        <td>Объект торговли иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>004 003</td>
+                        <td>Выставочно-ярмарочный объект</td>
+                    </tr>
+                    <tr>
+                        <td>004 003 001</td>
+                        <td>Выставочно-торговый объект</td>
+                    </tr>
+                    <tr>
+                        <td>004 004</td>
+                        <td>Объект предоставления гостиничных услуг</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 001</td>
+                        <td>Гостиница</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 002</td>
+                        <td>Апарт-отель</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 003</td>
+                        <td>Мотель</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 004</td>
+                        <td>Сюит-отель</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 005</td>
+                        <td>Хостел</td>
+                    </tr>
+                    <tr>
+                        <td>004 004 006</td>
+                        <td>Объект предоставления услуг средств размещения для краткосрочного проживания иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>004 005</td>
+                        <td>Объект общественного питания</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 001</td>
+                        <td>Ресторан</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 002</td>
+                        <td>Бар</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 003</td>
+                        <td>Кафе</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 004</td>
+                        <td>Столовая</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 005</td>
+                        <td>Закусочная</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 006</td>
+                        <td>Буфет</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 007</td>
+                        <td>Кофейня</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 008</td>
+                        <td>Кафетерий</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 009</td>
+                        <td>Магазин кулинарии</td>
+                    </tr>
+                    <tr>
+                        <td>004 005 010</td>
+                        <td>Предприятие быстрого обслуживания</td>
+                    </tr>
+                    <tr>
+                        <td>004 006</td>
+                        <td>Объект бытового обслуживания населения</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 001</td>
+                        <td>Баня, душевая, сауна</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 002</td>
+                        <td>Ателье</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 003</td>
+                        <td>Ломбард</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 004</td>
+                        <td>Парикмахерская</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 005</td>
+                        <td>Фотоателье</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 006</td>
+                        <td>Пункт проката</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 007</td>
+                        <td>Приемный пункт</td>
+                    </tr>
+                    <tr>
+                        <td>004 006 008</td>
+                        <td>Объект бытового обслуживания населения иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>004 007</td>
+                        <td>Объект услуг связи</td>
+                    </tr>
+                    <tr>
+                        <td>004 007 001</td>
+                        <td>Отделение связи, почтовое отделение</td>
+                    </tr>
+                    <tr>
+                        <td>004 007 002</td>
+                        <td>Телеграф</td>
+                    </tr>
+                    <tr>
+                        <td>004 008</td>
+                        <td>Объект обслуживания туристов</td>
+                    </tr>
+                    <tr>
+                        <td>004 008 001</td>
+                        <td>Экскурсионное бюро</td>
+                    </tr>
+                    <tr>
+                        <td>004 008 002</td>
+                        <td>Иной объект размещения организаций обслуживания туристов</td>
+                    </tr>
+                    <tr>
+                        <td>004 009</td>
+                        <td>Объект туризма и отдыха</td>
+                    </tr>
+                    <tr>
+                        <td>004 009 001</td>
+                        <td>Дом отдыха, пансионат</td>
+                    </tr>
+                    <tr>
+                        <td>004 009 002</td>
+                        <td>База отдыха, туристическая база</td>
+                    </tr>
+                    <tr>
+                        <td>004 009 003</td>
+                        <td>Детский лагерь отдыха</td>
+                    </tr>
+                    <tr>
+                        <td>004 009 004</td>
+                        <td>Детский оздоровительный лагерь</td>
+                    </tr>
+                    <tr>
+                        <td>004 010</td>
+                        <td>Объект обслуживания пассажиров</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 001</td>
+                        <td>Аэропорт, аэровокзал</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 002</td>
+                        <td>Автовокзал</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 003</td>
+                        <td>Железнодорожный вокзал</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 004</td>
+                        <td>Речной вокзал</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 005</td>
+                        <td>Автостанция</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 006</td>
+                        <td>Пассажирская железнодорожная станция, платформа, остановочный пункт</td>
+                    </tr>
+                    <tr>
+                        <td>004 010 007</td>
+                        <td>Транспортно-пересадочный узел</td>
+                    </tr>
+                    <tr>
+                        <td>004 011</td>
+                        <td>Объект ухода и содержания животных</td>
+                    </tr>
+                    <tr>
+                        <td>004 011 001</td>
+                        <td>Питомник, приют для безнадзорных животных</td>
+                    </tr>
+                    <tr>
+                        <td>004 011 002</td>
+                        <td>Центр кинологической службы</td>
+                    </tr>
+                    <tr>
+                        <td>004 011 003</td>
+                        <td>Учебно-дрессировочный центр</td>
+                    </tr>
+                    <tr>
+                        <td>004 011 004</td>
+                        <td>Зоогостиница</td>
+                    </tr>
+                    <tr>
+                        <td>004 011 005</td>
+                        <td>Объект ухода и содержания животных иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>004 012</td>
+                        <td>Объект размещения предприятий по ремонту бытовых изделий и бытовой аппаратуры</td>
+                    </tr>
+                    <tr>
+                        <td>004 012 001</td>
+                        <td>Предприятие по стирке белья и химической чистке одежды</td>
+                    </tr>
+                    <tr>
+                        <td>004 012 002</td>
+                        <td>Предприятие по ремонту бытовой техники и аппаратуры</td>
+                    </tr>
+                    <tr>
+                        <td>004 013</td>
+                        <td>Вспомогательный объект торгово-бытового обслуживания</td>
+                    </tr>
+                    <tr>
+                        <td>004 013 001</td>
+                        <td>Общественный туалет</td>
+                    </tr>
+                    <tr>
+                        <td>005</td>
+                        <td>Лечебно-оздоровительные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>005 001</td>
+                        <td>Стационарный лечебно-профилактический объект</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 001</td>
+                        <td>Больница</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 002</td>
+                        <td>Диспансер со стационаром</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 003</td>
+                        <td>Детская больница</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 004</td>
+                        <td>Родильный дом</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 005</td>
+                        <td>Перинатальный центр</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 006</td>
+                        <td>Госпиталь</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 007</td>
+                        <td>Участковая больница</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 008</td>
+                        <td>Специализированная больница</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 009</td>
+                        <td>Больница скорой медицинской помощи</td>
+                    </tr>
+                    <tr>
+                        <td>005 001 010</td>
+                        <td>Стационарный лечебно-профилактический объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 002</td>
+                        <td>Амбулаторно-поликлинический объект</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 001</td>
+                        <td>Поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 002</td>
+                        <td>Центр (медицинский, мануальной терапии, консультативно-диагностический и иной)</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 003</td>
+                        <td>Диспансер без стационара</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 004</td>
+                        <td>Женская консультация</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 005</td>
+                        <td>Детская поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 006</td>
+                        <td>Стоматологическая поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 007</td>
+                        <td>Амбулатория, в том числе врачебная</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 008</td>
+                        <td>Медико-санитарная часть</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 009</td>
+                        <td>Психотерапевтическая поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 010</td>
+                        <td>Физиотерапевтическая поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 011</td>
+                        <td>Консультативно-диагностическая поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 012</td>
+                        <td>Поликлиника медицинской реабилитации</td>
+                    </tr>
+                    <tr>
+                        <td>005 002 013</td>
+                        <td>Амбулаторно-поликлинический объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 003</td>
+                        <td>Объект скорой медицинской помощи и переливания крови</td>
+                    </tr>
+                    <tr>
+                        <td>005 003 001</td>
+                        <td>Станция скорой медицинской помощи</td>
+                    </tr>
+                    <tr>
+                        <td>005 003 002</td>
+                        <td>Станция переливания крови</td>
+                    </tr>
+                    <tr>
+                        <td>005 003 003</td>
+                        <td>Центр крови</td>
+                    </tr>
+                    <tr>
+                        <td>005 003 004</td>
+                        <td>Объект скорой медицинской помощи и переливания крови иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 004</td>
+                        <td>Объект медицинских служб</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 001</td>
+                        <td>Центр государственного санитарно-эпидемиологического надзора</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 002</td>
+                        <td>Центр гигиены и эпидемиологии</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 003</td>
+                        <td>Противочумный центр (станция)</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 004</td>
+                        <td>Дезинфекционный центр (станция)</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 005</td>
+                        <td>Центр гигиенического образования населения</td>
+                    </tr>
+                    <tr>
+                        <td>005 004 006</td>
+                        <td>Объект медицинских служб иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 005</td>
+                        <td>Лечебно-оздоровительный объект</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 001</td>
+                        <td>Санаторий</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 002</td>
+                        <td>Санаторий-профилакторий</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 003</td>
+                        <td>Санаторий для детей, в том числе для детей с родителями</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 004</td>
+                        <td>Санаторный оздоровительный лагерь круглогодичного действия</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 005</td>
+                        <td>Бальнеологическая лечебница</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 006</td>
+                        <td>Грязелечебница</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 007</td>
+                        <td>Курортная поликлиника</td>
+                    </tr>
+                    <tr>
+                        <td>005 005 008</td>
+                        <td>Лечебно-оздоровительный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 006</td>
+                        <td>Вспомогательный объект здравоохранения</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 001</td>
+                        <td>Бюро медико-социальной экспертизы</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 002</td>
+                        <td>Бюро медицинской статистики</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 003</td>
+                        <td>Бюро судебно-медицинской экспертизы</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 004</td>
+                        <td>Бюро патолого-анатомическое, морг</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 005</td>
+                        <td>Лаборатория клинико-диагностическая</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 006</td>
+                        <td>Лаборатория бактериологическая</td>
+                    </tr>
+                    <tr>
+                        <td>005 006 007</td>
+                        <td>Вспомогательный объект здравоохранения иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 007</td>
+                        <td>Объект здравоохранения иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>005 007 001</td>
+                        <td>Хоспис</td>
+                    </tr>
+                    <tr>
+                        <td>005 007 002</td>
+                        <td>Дом (больница) сестринского ухода</td>
+                    </tr>
+                    <tr>
+                        <td>005 007 003</td>
+                        <td>Лепрозорий</td>
+                    </tr>
+                    <tr>
+                        <td>005 008</td>
+                        <td>Ветеринарный объект</td>
+                    </tr>
+                    <tr>
+                        <td>005 008 001</td>
+                        <td>Ветеринарная лечебница (клиника)</td>
+                    </tr>
+                    <tr>
+                        <td>005 008 002</td>
+                        <td>Ветеринарная лаборатория</td>
+                    </tr>
+                    <tr>
+                        <td>005 008 003</td>
+                        <td>Ветеринарная станция</td>
+                    </tr>
+                    <tr>
+                        <td>005 008 004</td>
+                        <td>Ветеринарный участок</td>
+                    </tr>
+                    <tr>
+                        <td>005 008 005</td>
+                        <td>Ветеринарный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006</td>
+                        <td>Спортивно-рекреационные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>006 001</td>
+                        <td>Спортивно-зрелищный объект</td>
+                    </tr>
+                    <tr>
+                        <td>006 001 001</td>
+                        <td>Стадион</td>
+                    </tr>
+                    <tr>
+                        <td>006 001 002</td>
+                        <td>Стадион с трибунами на 1500 мест и более</td>
+                    </tr>
+                    <tr>
+                        <td>006 001 003</td>
+                        <td>Спортивная арена</td>
+                    </tr>
+                    <tr>
+                        <td>006 001 004</td>
+                        <td>Ипподром</td>
+                    </tr>
+                    <tr>
+                        <td>006 001 005</td>
+                        <td>Спортивно-зрелищный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 002</td>
+                        <td>Плоскостное спортивное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 001</td>
+                        <td>Площадка для хоккея</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 002</td>
+                        <td>Поле футбольное</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 003</td>
+                        <td>Открытый каток с искусственным льдом</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 004</td>
+                        <td>Корт открытый для тенниса</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 005</td>
+                        <td>Стрельбище для пулевой стрельбы</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 006</td>
+                        <td>Стрельбище для стендовой стрельбы</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 007</td>
+                        <td>Площадка для стрельбы из лука</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 008</td>
+                        <td>Тир</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 009</td>
+                        <td>Площадка велотриала</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 010</td>
+                        <td>Лыжный стадион</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 011</td>
+                        <td>Поле для бейсбола</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 012</td>
+                        <td>Поле для бадминтона</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 013</td>
+                        <td>Поле для баскетбола</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 014</td>
+                        <td>Поле для боулинга</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 015</td>
+                        <td>Поле для волейбола</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 016</td>
+                        <td>Поле для гандбола</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 017</td>
+                        <td>Поле для регби</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 018</td>
+                        <td>Поле для квадр-регби</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 019</td>
+                        <td>Поле для слалома на колясках</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 020</td>
+                        <td>Поле для гольфа</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 021</td>
+                        <td>Поле для лапты</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 022</td>
+                        <td>Поле для хоккея на траве</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 023</td>
+                        <td>Поле для крикета</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 024</td>
+                        <td>Площадка для пляжного волейбола</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 025</td>
+                        <td>Площадка для игры в городки</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 026</td>
+                        <td>Площадка для игры в настольный теннис</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 027</td>
+                        <td>Площадка для игры в стритбол</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 028</td>
+                        <td>Площадка для игры в кегли</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 029</td>
+                        <td>Площадка для игры в крокет</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 030</td>
+                        <td>Площадка для игры в хоккей на роликах</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 031</td>
+                        <td>Площадка для бега на роликах</td>
+                    </tr>
+                    <tr>
+                        <td>006 002 032</td>
+                        <td>Плоскостное спортивное сооружение иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 003</td>
+                        <td>Спортивная трасса</td>
+                    </tr>
+                    <tr>
+                        <td>006 003 001</td>
+                        <td>Автодром, мотодром, картинг</td>
+                    </tr>
+                    <tr>
+                        <td>006 003 002</td>
+                        <td>Велотрек</td>
+                    </tr>
+                    <tr>
+                        <td>006 003 003</td>
+                        <td>Велодром</td>
+                    </tr>
+                    <tr>
+                        <td>006 003 004</td>
+                        <td>Трасса велоспорта BMX (трек)</td>
+                    </tr>
+                    <tr>
+                        <td>006 003 005</td>
+                        <td>Спортивная трасса иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 004</td>
+                        <td>Спортивная база</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 001</td>
+                        <td>База гребная</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 002</td>
+                        <td>База конно-спортивная</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 003</td>
+                        <td>База мотовелоспорта</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 004</td>
+                        <td>База для парусного спорта (яхт-клуб)</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 005</td>
+                        <td>Гольф-клуб</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 006</td>
+                        <td>База рыболовно-спортивная</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 007</td>
+                        <td>Лодочная станция</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 008</td>
+                        <td>База лыжная для горных видов спорта</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 009</td>
+                        <td>База лыжная для массового катания</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 010</td>
+                        <td>База лыжная для прыжков с трамплина</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 011</td>
+                        <td>База альпинистская</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 012</td>
+                        <td>База санно-бобслейная</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 013</td>
+                        <td>Биатлонный комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>006 004 014</td>
+                        <td>Спортивная база иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 005</td>
+                        <td>Спортивный объект в закрытых помещениях</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 001</td>
+                        <td>Плавательный бассейн</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 002</td>
+                        <td>Плавательный бассейн 50-метровый</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 003</td>
+                        <td>Плавательный бассейн 25-метровый</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 004</td>
+                        <td>Плавательный бассейн для прыжков в воду</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 005</td>
+                        <td>Корт крытый</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 006</td>
+                        <td>Крытый каток с искусственным льдом</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 007</td>
+                        <td>Спортивный зал</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 008</td>
+                        <td>Спортивный зал размером 42 x 24</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 009</td>
+                        <td>Спортивный зал размером 36 x 18</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 010</td>
+                        <td>Спортивный зал размером 30 x 18</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 011</td>
+                        <td>Спортивный зал размером 30 x 15</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 012</td>
+                        <td>Спортивный зал размером 24 x 12</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 013</td>
+                        <td>Спортивный зал размером 18 x 9</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 014</td>
+                        <td>Тренажерный зал</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 015</td>
+                        <td>Зал общей физической подготовки (ОФП)</td>
+                    </tr>
+                    <tr>
+                        <td>006 005 016</td>
+                        <td>Спортивный объект в закрытых помещениях иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 006</td>
+                        <td>Спортивный комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 001</td>
+                        <td>Физкультурно-оздоровительный комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 002</td>
+                        <td>Спортивный центр</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 003</td>
+                        <td>Дворец спорта</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 004</td>
+                        <td>Ледовый дворец</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 005</td>
+                        <td>Физкультурно-спортивный комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 006</td>
+                        <td>Спортивно-культурный комплекс</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 007</td>
+                        <td>Манеж легкоатлетический</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 008</td>
+                        <td>Манеж футбольный</td>
+                    </tr>
+                    <tr>
+                        <td>006 006 009</td>
+                        <td>Спортивный комплекс иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>006 007</td>
+                        <td>Спортивно-досуговый объект</td>
+                    </tr>
+                    <tr>
+                        <td>006 007 001</td>
+                        <td>Бильярдная</td>
+                    </tr>
+                    <tr>
+                        <td>006 007 002</td>
+                        <td>Кегельбан (боулинг)</td>
+                    </tr>
+                    <tr>
+                        <td>006 007 003</td>
+                        <td>Спортивно-досуговый объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>007</td>
+                        <td>Социально-реабилитационные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>007 001</td>
+                        <td>Объект, осуществляющий стационарное социальное обслуживание</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 001</td>
+                        <td>Дом-интернат (пансионат), в том числе детский, малой вместимости, для престарелых и инвалидов, ветеранов войны и труда, милосердия</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 002</td>
+                        <td>Специальный дом-интернат, в том числе для престарелых</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 003</td>
+                        <td>Психоневрологический интернат, в том числе детский</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 004</td>
+                        <td>Специальный жилой дом для одиноких престарелых граждан</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 005</td>
+                        <td>Социально-реабилитационный центр, в том числе для несовершеннолетних, ветеранов войн и Вооруженных Сил</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 006</td>
+                        <td>Реабилитационный центр по социальной адаптации инвалидов и участников военных действий</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 007</td>
+                        <td>Социально-оздоровительный центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 008</td>
+                        <td>Геронтопсихиатрический центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 009</td>
+                        <td>Геронтологический центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 010</td>
+                        <td>Социальный приют для детей и подростков</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 011</td>
+                        <td>Центр содействия семейному воспитанию, в том числе для детей с особенностями развития</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 012</td>
+                        <td>Санаторно-лесная школа</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 013</td>
+                        <td>Специализированный дом ребенка</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 014</td>
+                        <td>Детский дом для детей-сирот и детей, оставшихся без попечения родителей</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 015</td>
+                        <td>Школа-интернат для детей-сирот и детей, оставшихся без попечения родителей</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 016</td>
+                        <td>Центр социальной (постинтернатной) адаптации</td>
+                    </tr>
+                    <tr>
+                        <td>007 001 017</td>
+                        <td>Объект, осуществляющий стационарное социальное обслуживание иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>007 002</td>
+                        <td>Объект, осуществляющий полустационарное социальное обслуживание</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 001</td>
+                        <td>Социально-реабилитационный центр, в том числе для несовершеннолетних</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 002</td>
+                        <td>Центр помощи детям, оставшимся без попечения родителей</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 003</td>
+                        <td>Реабилитационный центр, в том числе для детей и подростков с ограниченными возможностями</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 004</td>
+                        <td>Кризисный центр помощи женщинам</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 005</td>
+                        <td>Центр психолого-педагогической помощи населению</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 006</td>
+                        <td>Центр социальной адаптации (помощи), в том числе для лиц без определенного места жительства и занятий</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 007</td>
+                        <td>Дом ночного пребывания</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 008</td>
+                        <td>Социальный приют</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 009</td>
+                        <td>Центр поддержки семьи и детства</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 010</td>
+                        <td>Центр социальной помощи семье и детям</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 011</td>
+                        <td>Центр социального обслуживания, в том числе территориальный</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 012</td>
+                        <td>Социально-оздоровительный центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 013</td>
+                        <td>Консультативный центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 014</td>
+                        <td>Городской ресурсный центр содействия семейному воспитанию</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 015</td>
+                        <td>Социальная гостиница</td>
+                    </tr>
+                    <tr>
+                        <td>007 002 016</td>
+                        <td>Объект, осуществляющий полустационарное социальное обслуживание иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>007 003</td>
+                        <td>Объект, осуществляющий социальное обслуживание на дому</td>
+                    </tr>
+                    <tr>
+                        <td>007 003 001</td>
+                        <td>Центр социальной помощи</td>
+                    </tr>
+                    <tr>
+                        <td>007 003 002</td>
+                        <td>Центр социального обслуживания, в том числе территориальный</td>
+                    </tr>
+                    <tr>
+                        <td>007 004</td>
+                        <td>Объект, предоставляющий срочные социальные услуги</td>
+                    </tr>
+                    <tr>
+                        <td>007 004 001</td>
+                        <td>Консультативный центр</td>
+                    </tr>
+                    <tr>
+                        <td>007 004 002</td>
+                        <td>Служба срочного социального обслуживания, в том числе экстренной психологической помощи</td>
+                    </tr>
+                    <tr>
+                        <td>007 005</td>
+                        <td>Социально-реабилитационный объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>007 005 001</td>
+                        <td>Управление социальной защиты населения</td>
+                    </tr>
+                    <tr>
+                        <td>007 005 002</td>
+                        <td>Отделение организации социального обслуживания</td>
+                    </tr>
+                    <tr>
+                        <td>008</td>
+                        <td>Учебно-воспитательные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>008 001</td>
+                        <td>Объект общего образования</td>
+                    </tr>
+                    <tr>
+                        <td>008 001 001</td>
+                        <td>Дошкольная образовательная организация</td>
+                    </tr>
+                    <tr>
+                        <td>008 001 002</td>
+                        <td>Блок начальных классов</td>
+                    </tr>
+                    <tr>
+                        <td>008 001 003</td>
+                        <td>Общеобразовательная организация</td>
+                    </tr>
+                    <tr>
+                        <td>008 002</td>
+                        <td>Вспомогательный объект общего образования</td>
+                    </tr>
+                    <tr>
+                        <td>008 002 001</td>
+                        <td>Учебно-производственный комбинат</td>
+                    </tr>
+                    <tr>
+                        <td>009</td>
+                        <td>Одноквартирный жилой дом</td>
+                    </tr>
+                    <tr>
+                        <td>009 001</td>
+                        <td>Малоэтажный одноквартирный жилой дом</td>
+                    </tr>
+                    <tr>
+                        <td>009 001 001</td>
+                        <td>Индивидуальный жилой дом</td>
+                    </tr>
+                    <tr>
+                        <td>010</td>
+                        <td>Многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 001</td>
+                        <td>Многоэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 001 001</td>
+                        <td>Многоэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 002</td>
+                        <td>Среднеэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 002 001</td>
+                        <td>Среднеэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 003</td>
+                        <td>Малоэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 003 001</td>
+                        <td>Дом блокированной застройки</td>
+                    </tr>
+                    <tr>
+                        <td>010 003 002</td>
+                        <td>Малоэтажный многоквартирный дом</td>
+                    </tr>
+                    <tr>
+                        <td>010 004</td>
+                        <td>Общежитие</td>
+                    </tr>
+                    <tr>
+                        <td>010 004 001</td>
+                        <td>Общежитие для обучающихся в образовательных организациях</td>
+                    </tr>
+                    <tr>
+                        <td>010 004 002</td>
+                        <td>Общежитие для работников организаций</td>
+                    </tr>
+                    <tr>
+                        <td>011</td>
+                        <td>Коммунально-складские объекты</td>
+                    </tr>
+                    <tr>
+                        <td>011 001</td>
+                        <td>Складской объект</td>
+                    </tr>
+                    <tr>
+                        <td>011 001 001</td>
+                        <td>Склад</td>
+                    </tr>
+                    <tr>
+                        <td>011 001 002</td>
+                        <td>Сортировочный центр</td>
+                    </tr>
+                    <tr>
+                        <td>011 001 003</td>
+                        <td>Логистический центр</td>
+                    </tr>
+                    <tr>
+                        <td>011 002</td>
+                        <td>Объект по переработке, обезвреживанию и утилизации</td>
+                    </tr>
+                    <tr>
+                        <td>011 002 001</td>
+                        <td>Объект по переработке отходов производства и потребления</td>
+                    </tr>
+                    <tr>
+                        <td>011 002 002</td>
+                        <td>Мусороперегрузочная и мусоросортировочная станция</td>
+                    </tr>
+                    <tr>
+                        <td>011 002 003</td>
+                        <td>Снегоприемный, снегоплавильный пункт</td>
+                    </tr>
+                    <tr>
+                        <td>011 002 004</td>
+                        <td>Мусоросжигательный завод</td>
+                    </tr>
+                    <tr>
+                        <td>011 003</td>
+                        <td>Объект обслуживания наземного городского транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>011 003 001</td>
+                        <td>Автобусный парк</td>
+                    </tr>
+                    <tr>
+                        <td>011 003 002</td>
+                        <td>Парк автотранспортных средств</td>
+                    </tr>
+                    <tr>
+                        <td>011 003 003</td>
+                        <td>Трамвайное депо</td>
+                    </tr>
+                    <tr>
+                        <td>011 003 004</td>
+                        <td>Троллейбусный парк</td>
+                    </tr>
+                    <tr>
+                        <td>011 003 005</td>
+                        <td>Диспетчерский пункт</td>
+                    </tr>
+                    <tr>
+                        <td>011 004</td>
+                        <td>Объект животноводства</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 001</td>
+                        <td>Животноводческий комплекс, ферма, для содержания и разведения домашнего скота</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 002</td>
+                        <td>Птицефабрика, птицеферма</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 003</td>
+                        <td>Звероводческая, кролиководческая ферма</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 004</td>
+                        <td>Объект пчеловодства</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 005</td>
+                        <td>Рыбоводное хозяйство</td>
+                    </tr>
+                    <tr>
+                        <td>011 004 006</td>
+                        <td>Объект животноводства иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>011 005</td>
+                        <td>Объект растениеводства</td>
+                    </tr>
+                    <tr>
+                        <td>011 005 001</td>
+                        <td>Зерно- и семенохранилище</td>
+                    </tr>
+                    <tr>
+                        <td>011 005 002</td>
+                        <td>Овощехранилище</td>
+                    </tr>
+                    <tr>
+                        <td>011 005 003</td>
+                        <td>Теплица</td>
+                    </tr>
+                    <tr>
+                        <td>011 005 004</td>
+                        <td>Питомник</td>
+                    </tr>
+                    <tr>
+                        <td>011 005 005</td>
+                        <td>Объект растениеводства иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>011 006</td>
+                        <td>Коммунально-складской объект иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>011 006 001</td>
+                        <td>Сарай</td>
+                    </tr>
+                    <tr>
+                        <td>011 006 002</td>
+                        <td>Гараж, ангар для сельскохозяйственной техники и оборудования</td>
+                    </tr>
+                    <tr>
+                        <td>011 006 003</td>
+                        <td>Ремонтная мастерская для сельскохозяйственной техники и оборудования</td>
+                    </tr>
+                    <tr>
+                        <td>012</td>
+                        <td>Промышленно-производственные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>012 001</td>
+                        <td>Промышленно-производственный объект</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 001</td>
+                        <td>Объект производства пищевых продуктов, включая напитки</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 002</td>
+                        <td>Объект производства табачных изделий</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 003</td>
+                        <td>Объект текстильного производства</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 004</td>
+                        <td>Объект производства одежды; выделки и крашения меха</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 005</td>
+                        <td>Объект производства кожи, изделий из кожи и производства обуви</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 006</td>
+                        <td>Объект по обработке древесины и объект производства изделий из дерева и пробки, кроме мебели</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 007</td>
+                        <td>Объект производства целлюлозы, древесной массы, бумаги, картона и изделий из них</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 008</td>
+                        <td>Объект издательской и полиграфической деятельности, тиражирования записанных носителей информации</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 009</td>
+                        <td>Объект производства кокса</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 010</td>
+                        <td>Объект производства нефтепродуктов</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 011</td>
+                        <td>Объект производства ядерных материалов</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 012</td>
+                        <td>Объект химического производства, кроме фармацевтического производства</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 013</td>
+                        <td>Объект фармацевтического производства</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 014</td>
+                        <td>Объект производства резиновых и пластмассовых изделий</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 015</td>
+                        <td>Объект производства прочих неметаллических минеральных продуктов</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 016</td>
+                        <td>Объект металлургического производства</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 017</td>
+                        <td>Объект производства готовых металлических изделий</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 018</td>
+                        <td>Объект производства машин и оборудования</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 019</td>
+                        <td>Объект производства офисного оборудования и вычислительной техники</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 020</td>
+                        <td>Объект производства электрических машин и электрооборудования</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 021</td>
+                        <td>Объект производства электронных компонентов, аппаратур для радио, телевидения и связи</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 022</td>
+                        <td>Объект производства автомобилей, прицепов и полуприцепов</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 023</td>
+                        <td>Объект производства судов, летательных и космических аппаратов и прочих транспортных средств</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 024</td>
+                        <td>Объект производства мебели</td>
+                    </tr>
+                    <tr>
+                        <td>012 001 025</td>
+                        <td>Объект индустриальных парков</td>
+                    </tr>
+                    <tr>
+                        <td>013</td>
+                        <td>Специальные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>013 001</td>
+                        <td>Гидротехническое, вспомогательное инженерное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 001 001</td>
+                        <td>Дамба</td>
+                    </tr>
+                    <tr>
+                        <td>013 001 002</td>
+                        <td>Берегоукрепительное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 001 003</td>
+                        <td>Шлюз</td>
+                    </tr>
+                    <tr>
+                        <td>013 001 004</td>
+                        <td>Вспомогательное гидротехническое инженерное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 001 005</td>
+                        <td>Гидротехническое, вспомогательное инженерное сооружение иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>013 002</td>
+                        <td>Объект обороны и безопасности</td>
+                    </tr>
+                    <tr>
+                        <td>013 002 001</td>
+                        <td>Военкомат</td>
+                    </tr>
+                    <tr>
+                        <td>013 002 002</td>
+                        <td>Казарма</td>
+                    </tr>
+                    <tr>
+                        <td>013 003</td>
+                        <td>Объекты мест содержания под стражей и (или) отбывания наказания</td>
+                    </tr>
+                    <tr>
+                        <td>013 003 001</td>
+                        <td>Тюрьма</td>
+                    </tr>
+                    <tr>
+                        <td>013 003 002</td>
+                        <td>Исправительная колония</td>
+                    </tr>
+                    <tr>
+                        <td>013 003 003</td>
+                        <td>Следственный изолятор</td>
+                    </tr>
+                    <tr>
+                        <td>013 003 004</td>
+                        <td>Арестный дом</td>
+                    </tr>
+                    <tr>
+                        <td>013 003 005</td>
+                        <td>Исправительный центр</td>
+                    </tr>
+                    <tr>
+                        <td>013 004</td>
+                        <td>Ритуальный объект</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 001</td>
+                        <td>Крематорий</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 002</td>
+                        <td>Колумбарий</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 003</td>
+                        <td>Похоронный дом</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 004</td>
+                        <td>Бюро похоронного обслуживания</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 005</td>
+                        <td>Салон-магазин</td>
+                    </tr>
+                    <tr>
+                        <td>013 004 006</td>
+                        <td>Останкохранилище</td>
+                    </tr>
+                    <tr>
+                        <td>013 005</td>
+                        <td>Объект размещения отходов</td>
+                    </tr>
+                    <tr>
+                        <td>013 005 001</td>
+                        <td>Скотомогильник, биотермическая яма</td>
+                    </tr>
+                    <tr>
+                        <td>013 005 002</td>
+                        <td>Объект размещения (хранения) твердых коммунальных отходов</td>
+                    </tr>
+                    <tr>
+                        <td>013 006</td>
+                        <td>Объект электроснабжения</td>
+                    </tr>
+                    <tr>
+                        <td>013 006 001</td>
+                        <td>Электростанция, использующая энергию природных явлений, в т.ч. гидроэлектростанция</td>
+                    </tr>
+                    <tr>
+                        <td>013 006 002</td>
+                        <td>Атомная электростанция</td>
+                    </tr>
+                    <tr>
+                        <td>013 006 003</td>
+                        <td>Электрическая подстанция</td>
+                    </tr>
+                    <tr>
+                        <td>013 006 004</td>
+                        <td>Линия электропередачи (ЛЭП)</td>
+                    </tr>
+                    <tr>
+                        <td>013 006 005</td>
+                        <td>Объект электроснабжения иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>013 007</td>
+                        <td>Объект водоснабжения</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 001</td>
+                        <td>Скважина для забора воды</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 002</td>
+                        <td>Поверхностный водозабор</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 003</td>
+                        <td>Водопроводное очистное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 004</td>
+                        <td>Насосная станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 005</td>
+                        <td>Сеть водоснабжения</td>
+                    </tr>
+                    <tr>
+                        <td>013 007 006</td>
+                        <td>Объект водоснабжения иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>013 008</td>
+                        <td>Объект водоотведения и канализации</td>
+                    </tr>
+                    <tr>
+                        <td>013 008 001</td>
+                        <td>Канализационная насосная станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 008 002</td>
+                        <td>Канализационное очистное сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 008 003</td>
+                        <td>Канализационная сеть</td>
+                    </tr>
+                    <tr>
+                        <td>013 009</td>
+                        <td>Объект теплоснабжения</td>
+                    </tr>
+                    <tr>
+                        <td>013 009 001</td>
+                        <td>Тепловая станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 009 002</td>
+                        <td>Котельная</td>
+                    </tr>
+                    <tr>
+                        <td>013 009 003</td>
+                        <td>Тепловой пункт</td>
+                    </tr>
+                    <tr>
+                        <td>013 009 004</td>
+                        <td>Насосная станция тепловых сетей</td>
+                    </tr>
+                    <tr>
+                        <td>013 009 005</td>
+                        <td>Тепловая сеть</td>
+                    </tr>
+                    <tr>
+                        <td>013 010</td>
+                        <td>Объект газоснабжения</td>
+                    </tr>
+                    <tr>
+                        <td>013 010 001</td>
+                        <td>Газорегуляторный пункт</td>
+                    </tr>
+                    <tr>
+                        <td>013 010 002</td>
+                        <td>Газораспределительная станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 010 003</td>
+                        <td>Газораспределительная сеть</td>
+                    </tr>
+                    <tr>
+                        <td>013 011</td>
+                        <td>Объект связи</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 001</td>
+                        <td>Автоматическая телефонная станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 002</td>
+                        <td>Антенно-мачтовое сооружение</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 003</td>
+                        <td>Башня сотовой связи</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 004</td>
+                        <td>Спутниковая наземная станция</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 005</td>
+                        <td>Телевизионная станция, радиостанция</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 006</td>
+                        <td>Телевизионный ретранслятор</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 007</td>
+                        <td>Радиорелейная линия связи</td>
+                    </tr>
+                    <tr>
+                        <td>013 011 008</td>
+                        <td>Волокнисто-оптическая линия связи</td>
+                    </tr>
+                    <tr>
+                        <td>013 012</td>
+                        <td>Смешанный объект инженерной инфраструктуры</td>
+                    </tr>
+                    <tr>
+                        <td>013 012 001</td>
+                        <td>Теплоэлектроцентраль</td>
+                    </tr>
+                    <tr>
+                        <td>013 012 002</td>
+                        <td>Теплоэлектростанция</td>
+                    </tr>
+                    <tr>
+                        <td>013 012 003</td>
+                        <td>Коллектор</td>
+                    </tr>
+                    <tr>
+                        <td>013 013</td>
+                        <td>Аварийно-спасательный объект и объект гражданской обороны, защиты от чрезвычайных ситуаций, обеспечения пожарной безопасности</td>
+                    </tr>
+                    <tr>
+                        <td>013 013 001</td>
+                        <td>Объект аварийно-спасательной службы, формирования</td>
+                    </tr>
+                    <tr>
+                        <td>013 013 002</td>
+                        <td>Объект пожарной охраны</td>
+                    </tr>
+                    <tr>
+                        <td>013 013 003</td>
+                        <td>Объект гражданской обороны, защиты от чрезвычайных ситуаций</td>
+                    </tr>
+                    <tr>
+                        <td>014</td>
+                        <td>Жилищно-коммунальные объекты</td>
+                    </tr>
+                    <tr>
+                        <td>014 001</td>
+                        <td>Объект хранения автотранспортных средств</td>
+                    </tr>
+                    <tr>
+                        <td>014 001 001</td>
+                        <td>Гараж легкового автотранспорта</td>
+                    </tr>
+                    <tr>
+                        <td>014 001 002</td>
+                        <td>Гараж грузовых автомобилей</td>
+                    </tr>
+                    <tr>
+                        <td>014 001 003</td>
+                        <td>Многоярусный гараж автомобилей</td>
+                    </tr>
+                    <tr>
+                        <td>014 001 004</td>
+                        <td>Открытая надземная стоянка, предназначенная для постоянного и временного хранения автомобилей</td>
+                    </tr>
+                    <tr>
+                        <td>014 001 005</td>
+                        <td>Подземная стоянка</td>
+                    </tr>
+                    <tr>
+                        <td>014 002</td>
+                        <td>Объект ремонта, содержания и обслуживания автотранспортных средств</td>
+                    </tr>
+                    <tr>
+                        <td>014 002 001</td>
+                        <td>Станция технического обслуживания</td>
+                    </tr>
+                    <tr>
+                        <td>014 002 002</td>
+                        <td>Автогазозаправочная станция, газонаполнительная станция</td>
+                    </tr>
+                    <tr>
+                        <td>014 002 003</td>
+                        <td>Автозаправочная станция</td>
+                    </tr>
+                    <tr>
+                        <td>014 002 004</td>
+                        <td>Автомойка</td>
+                    </tr>
+                    <tr>
+                        <td>014 002 005</td>
+                        <td>Объект ремонта, содержания и обслуживания автотранспортных средств иного типа</td>
+                    </tr>
+                    <tr>
+                        <td>015</td>
+                        <td>Улицы и дороги</td>
+                    </tr>
+                    <tr>
+                        <td>015 001</td>
+                        <td>Объект улично-дорожной сети</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 001</td>
+                        <td>Автомобильная дорога</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 002</td>
+                        <td>Путепровод</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 003</td>
+                        <td>Развязка в разных уровнях</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 004</td>
+                        <td>Подземный пешеходный переход</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 005</td>
+                        <td>Надземный пешеходный переход</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 006</td>
+                        <td>Трамвайный путь</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 007</td>
+                        <td>Троллейбусная линия</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 008</td>
+                        <td>Тоннель</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 009</td>
+                        <td>Мост</td>
+                    </tr>
+                    <tr>
+                        <td>015 001 010</td>
+                        <td>Эстакада</td>
+                    </tr>
+                    <tr>
+                        <td>016</td>
+                        <td>Объекты внеуличного транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>016 001</td>
+                        <td>Объект метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 001</td>
+                        <td>Линия метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 002</td>
+                        <td>Станция метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 003</td>
+                        <td>Тоннель метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 004</td>
+                        <td>Метромост</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 005</td>
+                        <td>Электродепо метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 001 006</td>
+                        <td>Административно-производственное здание метрополитена</td>
+                    </tr>
+                    <tr>
+                        <td>016 002</td>
+                        <td>Объект скоростного внеуличного транспорта (кроме метрополитена)</td>
+                    </tr>
+                    <tr>
+                        <td>016 002 001</td>
+                        <td>Линия монорельсовой транспортной системы</td>
+                    </tr>
+                    <tr>
+                        <td>016 002 002</td>
+                        <td>Станция монорельсовой транспортной системы</td>
+                    </tr>
+                    <tr>
+                        <td>016 002 003</td>
+                        <td>Электродепо скоростного внеуличного транспорта (кроме метрополитена)</td>
+                    </tr>
+                    <tr>
+                        <td>017</td>
+                        <td>Объекты внешнего транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>017 001</td>
+                        <td>Объект воздушного транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>017 001 001</td>
+                        <td>Аэродром</td>
+                    </tr>
+                    <tr>
+                        <td>017 001 002</td>
+                        <td>Вертолетная площадка</td>
+                    </tr>
+                    <tr>
+                        <td>017 001 003</td>
+                        <td>Объект обслуживания воздушных судов</td>
+                    </tr>
+                    <tr>
+                        <td>017 001 004</td>
+                        <td>Взлетно-посадочная полоса</td>
+                    </tr>
+                    <tr>
+                        <td>017 002</td>
+                        <td>Объект железнодорожного транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>017 002 001</td>
+                        <td>Железная дорога</td>
+                    </tr>
+                    <tr>
+                        <td>017 002 002</td>
+                        <td>Технический объект обеспечения эксплуатации железнодорожного транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>017 002 003</td>
+                        <td>Грузовая техническая промежуточная и узловая железнодорожная станция</td>
+                    </tr>
+                    <tr>
+                        <td>017 003</td>
+                        <td>Объект водного транспорта</td>
+                    </tr>
+                    <tr>
+                        <td>017 003 001</td>
+                        <td>Речной порт</td>
+                    </tr>
+                    <tr>
+                        <td>017 003 002</td>
+                        <td>Причал</td>
+                    </tr>
+                    <tr>
+                        <td>017 003 003</td>
+                        <td>Пристань</td>
+                    </tr>
+                    <tr>
+                        <td>017 003 004</td>
+                        <td>Объект обслуживания водного транспорта</td>
+                    </tr>
+                    <!-- Добавьте остальные строки -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Функция для переключения темы
+        function toggleTheme() {
+            const body = document.body;
+            const themeSwitcher = document.querySelector('.theme-switcher');
+
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeSwitcher.textContent = 'Темная тема';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeSwitcher.textContent = 'Светлая тема';
+            }
+        }
+
+        // Функции для работы с таблицами
+        function showTable(tableId) {
+            document.getElementById('rayTable').classList.add('hidden');
+            document.getElementById('fnoTable').classList.add('hidden');
+            document.getElementById(tableId).classList.remove('hidden');
+        }
+
+        function searchTable(tableId) {
+            var input, filter, table, tr, td, i, j, txtValue;
+            if (tableId === 'rayTable') {
+                input = document.getElementById("searchRay");
+                table = document.getElementById("dataRayTable");
+            } else {
+                input = document.getElementById("searchFno");
+                table = document.getElementById("dataFnoTable");
+            }
+            filter = input.value.toUpperCase();
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
